@@ -1,14 +1,17 @@
 package com.example.inicioactivity
 
+import android.content.Intent // <-- IMPORTACIÓN AÑADIDA
 import android.graphics.RenderEffect
-import android.graphics.Shader // <-- 1. Asegúrate de que esta importación esté aquí
+import android.graphics.Shader
 import android.os.Build
 import android.os.Bundle
-import android.widget.ImageView // <-- 2. Y esta también
+import android.widget.Button // <-- IMPORTACIÓN AÑADIDA
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.button.MaterialButton // <-- IMPORTACIÓN AÑADIDA
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,5 +36,19 @@ class MainActivity : AppCompatActivity() {
             // Aplicamos el efecto a nuestro ImageView.
             backgroundImageView.setRenderEffect(blurEffect)
         }
+
+        // --- CÓDIGO AÑADIDO PARA EL BOTÓN REGISTRAR ---
+        // 1. Encontrar el botón "Registrar" por su ID del XML.
+        val registerButton = findViewById<MaterialButton>(R.id.buttonRegister)
+
+        // 2. Asignarle una acción para cuando se haga clic.
+        registerButton.setOnClickListener {
+            // 3. Crear un Intent que apunte a la actividad Register.
+            val intent = Intent(this, Register::class.java)
+
+            // 4. Iniciar la nueva actividad.
+            startActivity(intent)
+        }
+        // --- FIN DEL CÓDIGO AÑADIDO ---
     }
 }
