@@ -1,6 +1,6 @@
+// 1. CORREGIR EL PAQUETE: Debe ser solo uno.
 package com.example.inicioactivity
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -8,39 +8,43 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+// 2. IMPORTAR LA CLASE DE VIEW BINDING GENERADA PARA TU LAYOUT
 import com.example.inicioactivity.databinding.ActivityMenuPrincipalBinding
 import com.google.android.material.navigation.NavigationView
+// 3. ELIMINAR la importación manual de 'R'. Ya no es necesaria.
 
-// Esta es la clase para la pantalla del menú.
-// Su nombre coincide con el archivo XML `activity_menu_principal.xml`.
-class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class PagPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    // 4. Usar View Binding en lugar de 'findViewById'
+    // Declara el objeto "binding" que nos dará acceso seguro a todas las vistas.
     private lateinit var binding: ActivityMenuPrincipalBinding
-    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMenuPrincipalBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        // 1. Configura la Toolbar
+        // 5. Cargar el layout correcto usando View Binding.
+        binding = ActivityMenuPrincipalBinding.inflate(layoutInflater)
+        setContentView(binding.root) // ¡Se usa binding.root!
+
+        // 6. Acceder a las vistas a través de 'binding' de forma segura.
+        // Ya no necesitas 'findViewById'.
         setSupportActionBar(binding.toolbar)
 
-        // 2. Configura el botón de hamburguesa para que abra/cierre el menú
-        toggle = ActionBarDrawerToggle(
+        // Configura el Navigation Drawer y el botón de "hamburguesa".
+        val toggle = ActionBarDrawerToggle(
             this,
-            binding.drawerLayout,
-            binding.toolbar,
+            binding.drawerLayout, // Acceso seguro al DrawerLayout
+            binding.toolbar,      // Acceso seguro a la Toolbar
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // 3. Indica que esta clase manejará los clics en los ítems del menú
-        binding.navView.setNavigationItemSelectedListener(this)
+        // Establece el listener para los clics en los ítems del menú.
+        binding.navView.setNavigationItemSelectedListener(this) // Acceso seguro a navView
 
-        // 4. Maneja el botón "Atrás" del teléfono
+        // Configura el manejo del botón "Atrás".
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -54,13 +58,16 @@ class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
-    // 5. Esta función se ejecuta cuando se presiona un ítem del menú
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            // Aquí puedes añadir la lógica para los ítems de tu menú (nav_profile, etc.)
-            // Por ejemplo:
-            // R.id.nav_profile -> Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
+            R.id.nav_profile -> {
+                Toast.makeText(this, "Abriendo Mi Perfil", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_saved_recipes -> {
+                Toast.makeText(this, "Viendo Recetas Guardadas", Toast.LENGTH_SHORT).show()
+            }
         }
+        // Cierra el menú usando 'binding'.
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
