@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <!-- El ID "nav_profile" que tu Kotlin está buscando -->
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="Mi Perfil" />
+
+        <!-- El ID "nav_saved_recipes" que tu Kotlin está buscando -->
+        <item
+            android:id="@+id/nav_saved_recipes"
+            android:icon="@android:drawable/ic_menu_save"
+            android:title="Recetas Guardadas" />
+
+    </group>
+
+</menu>
+    
