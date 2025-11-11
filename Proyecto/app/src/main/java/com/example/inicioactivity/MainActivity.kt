@@ -13,16 +13,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton // <-- IMPORTACIÓN AÑADIDA
 
-// ... (Código anterior sin cambios)
-
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        // ... (resto del código onCreate, incluyendo el ViewCompat y el blur)
 
-        // 1. Encontrar los botones por su ID del XML.
+        val backgroundImage = findViewById<ImageView>(R.id.background_image) // Para efecto de fondo de pantalla de inicio
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val blurEffect = RenderEffect.createBlurEffect(15f, 15f, Shader.TileMode.CLAMP)
+            backgroundImage.setRenderEffect(blurEffect)
+        } // Fin del bloque para efecto borroso
+
         val registerButton = findViewById<MaterialButton>(R.id.buttonRegister)
         val loginButton = findViewById<MaterialButton>(R.id.button2) // Boton de "comenzar"
 
@@ -45,5 +47,5 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         } // <-- ¡Cierre correcto del Listener de Login!
 
-    } // <-- Cierre de onCreate()
-} // <-- Cierre de la clase MainActivity (Ya no hay una llave extra al final del archivo)
+    }
+}

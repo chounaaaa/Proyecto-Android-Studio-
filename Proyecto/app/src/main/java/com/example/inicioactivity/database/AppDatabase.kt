@@ -4,29 +4,35 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters // ¡Necesitas esta importación para las fechas!
 
-// Le decimos a Room qué entidades (tablas) contiene esta base de datos y la versión.
-// Si añades más tablas (como Receta, Ingrediente), tienes que listarlas aquí.
-@Database(entities = [Usuario::class, Receta::class, Ingrediente::class], version = 2)
+// ¡AÑADE TODAS TUS TABLAS Y AUMENTA LA VERSIÓN!
+// Si ya creaste Calificacion.kt, etc., añádelas aquí.
+// La versión debe ser MAYOR a la que tenías. Si era 1, pon 2.
+@Database(entities = [Usuario::class, Receta::class, Ingrediente::class, Calificacion::class], version = 4)
+@TypeConverters(Converters::class) // ¡Añade esto para que Room guarde las fechas!
 abstract class AppDatabase : RoomDatabase() {
 
-    // La base de datos debe exponer los DAOs.
     abstract fun usuarioDao(): UsuarioDao
-    // abstract fun recetaDao(): RecetaDao // <-- Añadirías los otros DAOs aquí.
 
     companion object {
-        // @Volatile asegura que el valor de INSTANCE sea siempre el más reciente.
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-            // synchronized evita que dos hilos creen la base de datos al mismo tiempo.
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "chefs_crew_database" // Nombre del archivo de la base de datos
-                ).build()
+                    "chefs_crew_database"
+                )
+                    // --- ¡ESTA ES LA LÍNEA MÁGICA QUE FALTABA! ---
+                    // Le dice a Room que si hay un cambio de versión,
+                    // destruya la base de datos vieja y cree una nueva.
+                    // ¡Esto borra todos los datos, pero arregla el problema!
+                    .fallbackToDestructiveMigration()
+                    .build() // Ahora el .build() está después.
+
                 INSTANCE = instance
                 instance
             }
