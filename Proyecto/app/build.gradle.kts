@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.inicioactivity"
-    compileSdk = 36
+    compileSdk = 36 // O la versión que estés usando, por ejemplo 34
 
     defaultConfig {
         applicationId = "com.example.inicioactivity"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 36 // O la versión que estés usando, por ejemplo 34
         versionCode = 1
         versionName = "1.0"
 
@@ -27,11 +27,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        // Generalmente para proyectos nuevos se usa JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "11"
+        // Y el jvmTarget correspondiente es "1.8"
+        jvmTarget = "1.8"
+    }
+    // Esta sección es importante para que funcione el View Binding
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -42,6 +48,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

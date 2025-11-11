@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/verde_oscuro"
     android:padding="16dp"
-    tools:context=".Register">
+    tools:context=".Login">
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -39,7 +39,7 @@
         app:shapeAppearanceOverlay="@style/FormaRedondeada">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextUsername"
+            android:id="@+id/Username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nombre de usuario"
@@ -63,7 +63,7 @@
         app:shapeAppearanceOverlay="@style/FormaRedondeada">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextEmail"
+            android:id="@+id/Email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Correo electrónico"
@@ -90,7 +90,7 @@
         app:shapeAppearanceOverlay="@style/FormaRedondeada">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextPassword"
+            android:id="@+id/Password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contraseña"
