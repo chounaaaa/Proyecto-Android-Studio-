@@ -1,83 +1,78 @@
 package com.example.inicioactivity
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
-import android.content.Intent
-import android.widget.TextView
-import androidx.lifecycle.lifecycleScope
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.inicioactivity.database.AppDatabase
 import com.example.inicioactivity.database.Usuario
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
+import com.example.inicioactivity.databinding.ActivityRegisterBinding
 import kotlinx.coroutines.launch
 
 class Register : AppCompatActivity() {
 
-    // 1. Declarar una variable para la base de datos.
+    private lateinit var binding: ActivityRegisterBinding
+    // Mantenemos la declaración, pero seremos más cuidadosos al usarla.
     private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Esto le dice a la app que puede dibujar debajo de las barras del sistema.
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        // Obtenemos el controlador de las barras del sistema.
         val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-        // Hacemos que la barra de estado sea transparente para poder ponerle nuestro color.
         window.statusBarColor = Color.TRANSPARENT
-        // deben ser de color claro para que se vean bien sobre nuestro fondo oscuro.
         insetsController.isAppearanceLightStatusBars = false
 
-        setContentView(R.layout.activity_register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // 2. Inicializar la base de datos.
+        // Inicializamos db aquí como antes.
         db = AppDatabase.getDatabase(this)
 
-        val buttonRegister = findViewById<MaterialButton>(R.id.buttonRegister)
-        val editTextUsername = findViewById<TextInputEditText>(R.id.editTextUsername)
-        val editTextEmail = findViewById<TextInputEditText>(R.id.editTextEmail)
-        val editTextPassword = findViewById<TextInputEditText>(R.id.editTextPassword)
-        val loginLink = findViewById<TextView>(R.id.textViewLoginLink)
-
-        loginLink.setOnClickListener {
+        binding.textViewLoginLink.setOnClickListener {
             val intent = Intent(this, Login::class.java)
-            // Ejecutamos el intent para abrir la pantalla de Login
             startActivity(intent)
-            // Cerramos la pantalla de Registro para que el usuario no pueda
-            // volver a ella presionando el botón "atrás" desde el Login.
             finish()
         }
 
-        buttonRegister.setOnClickListener {
-            val username = editTextUsername.text.toString().trim()
-            val email = editTextEmail.text.toString().trim()
-            val password = editTextPassword.text.toString().trim()
+        binding.buttonRegister.setOnClickListener {
+            val username = binding.Username.text.toString().trim()
+            val email = binding.Email.text.toString().trim()
+            val password = binding.Password.text.toString().trim()
 
-            if (username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                // 3. Usar una coroutine para no bloquear la pantalla.
+            val emailEsValido = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+            val camposNoEstanVacios = username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
+
+            if (camposNoEstanVacios && emailEsValido) {
+                // --- CAMBIO CLAVE: Usamos 'this@Register' como contexto para la corutina ---
+                // y para la base de datos, garantizando que el contexto está vivo.
                 lifecycleScope.launch {
-                    // ¡OJO! En una app real, la contraseña debe ser "hasheada" (cifrada) antes de guardarse.
-                    // Por ahora, la guardamos así como ejemplo.
                     val nuevoUsuario = Usuario(
                         nombreUsuario = username,
                         correo = email,
                         hashContrasena = password
                     )
 
-                    // 4. Llamar al DAO para insertar el usuario.
-                    db.usuarioDao().insertarUsuario(nuevoUsuario)
+                    // Accedemos a la base de datos dentro de la corutina para más seguridad
+                    AppDatabase.getDatabase(applicationContext).usuarioDao().insertarUsuario(nuevoUsuario)
 
-                    // 5. Mostrar un mensaje de éxito en la pantalla.
+                    // Volvemos al hilo principal para la UI
                     runOnUiThread {
                         Toast.makeText(this@Register, "¡Usuario registrado con éxito!", Toast.LENGTH_SHORT).show()
-                        finish() // Opcional: Cierra la pantalla de registro y vuelve a la anterior.
+                        val intent = Intent(this@Register, Login::class.java)
+                        startActivity(intent)
+                        finish()
                     }
                 }
             } else {
-                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                if (!camposNoEstanVacios) {
+                    Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "El formato del correo electrónico no es válido", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
