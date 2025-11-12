@@ -55,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:textColorHint="#99FFFFFF"
+        app:boxStrokeWidth="0dp"
         app:boxBackgroundColor="@color/verde_oscuro_input"
         app:boxStrokeColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -123,13 +124,13 @@
 
         <!-- TextView "¿Olvidaste tu contraseña?" -->
         <TextView
-            android:id="@+id/textViewForgotPasswordLink"
+            android:id="@+id/textViewRegisterLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:text="¿Olvidaste tu contraseña?"
+            android:text="¿No tenes cuenta? Registrarse"
             android:textColor="@color/naranja"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

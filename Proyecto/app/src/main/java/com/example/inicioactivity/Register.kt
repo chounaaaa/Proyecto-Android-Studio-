@@ -20,12 +20,6 @@ class Register : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. TU CÓDIGO para la barra de estado (¡correcto!).
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-        window.statusBarColor = Color.TRANSPARENT
-        insetsController.isAppearanceLightStatusBars = false
-
         // 2. CÓDIGO DE TU AMIGO para inicializar ViewBinding (¡correcto!).
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
