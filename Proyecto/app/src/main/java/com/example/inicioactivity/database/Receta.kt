@@ -14,4 +14,5 @@ data class Receta(
     val tiempoPreparacion: Int,
     val dificultad: String,
     val pasos: String,
+    val imagenResId: Int
 )
