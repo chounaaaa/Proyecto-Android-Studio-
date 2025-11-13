@@ -1,5 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
+    <!--
+    Este archivo se deja mayormente vacío para el tema de MenuPrincipal,
+    para evitar que el sistema fuerce la transparencia en la barra de estado
+    en versiones nuevas de Android, permitiendo que el color negro definido
+    en los otros temas tenga efecto.
+    -->
     <style name="Theme.InicioActivity" parent="Base.Theme.InicioActivity">
         <!-- Transparent system bars for edge-to-edge. -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
