@@ -8,73 +8,95 @@
     android:fitsSystemWindows="true"
     tools:context=".MenuPrincipal">
 
-    <!-- 2. CONTENIDO DE LA PANTALLA PRINCIPAL -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/verde_oscuro">
-        <!-- Contenedor para la barra de herramientas (Toolbar) -->
+        android:background="#1B5E20">
+
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:background="@color/verde_oscuro">
+            android:background="#388E3C"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <!-- LA BARRA SUPERIOR (TOOLBAR) -->
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/verde_oscuro_encabezado"
+                android:background="#388E3C"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="8dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="4dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/search_edit_text"
-                    android:layout_width="match_parent"
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@color/verde_oscuro_input"
-                    android:drawableStart="@android:drawable/ic_menu_search"
-                    android:drawablePadding="12dp"
-                    android:hint="Buscar recetas..."
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp"
-                    android:maxLines="1"/>
+                    android:layout_weight="1"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@android:color/white">
 
-            </com.google.android.material.card.MaterialCardView>
+                    <EditText
+                        android:id="@+id/search_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:drawableStart="@drawable/outline_category_search_24"
+                        android:drawablePadding="12dp"
+                        android:hint="Buscar por nombre..."
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp"
+                        android:textColorHint="#8A8A8A"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/filter_button"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="Filtro"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    app:icon="@drawable/ic_filter"
+                    app:iconPadding="4dp"
+                    app:iconTint="@android:color/white" />
+
+            </LinearLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Contenedor para el resto de tu contenido (recetas, etc.) -->
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <!-- Contenido de la pantalla -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Bienvenido a Chef's Crew"
+                android:textColor="@android:color/white"
                 android:textSize="24sp"
-                android:textColor="@color/white"/>
-
+                tools:ignore="HardcodedText" />
         </FrameLayout>
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- 3. EL MENÚ DESPLEGABLE (NAVIGATION VIEW) -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -82,5 +104,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu" />
-
 </androidx.drawerlayout.widget.DrawerLayout>
