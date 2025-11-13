@@ -4,20 +4,20 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "ingredientes",
-    // Conecta cada ingrediente con la receta a la que pertenece.
+@Entity(    tableName = "ingredientes",
+    // Esta clave foránea asegura que cada ingrediente pertenece a una receta que existe.
+    // Si una receta se borra, todos sus ingredientes se borrarán en cascada.
     foreignKeys = [ForeignKey(
         entity = Receta::class,
         parentColumns = ["id_receta"],
-        childColumns = ["id_receta_pertenece"],
-        onDelete = ForeignKey.CASCADE // Si se borra una receta, se borran sus ingredientes.
+        childColumns = ["idReceta"], // El nombre debe coincidir con el campo de abajo
+        onDelete = ForeignKey.CASCADE
     )]
 )
 data class Ingrediente(
     @PrimaryKey(autoGenerate = true)
     val id_ingrediente: Int = 0,
     val nombre: String,
-    val cantidad: String, // Usamos String para ser flexibles (ej: "1 taza", "200 gr", "1 pizca")
-    val id_receta_pertenece: Int // Columna que almacena el ID de la receta
+    val cantidad: String,
+    val idReceta: Int // Esta es la columna que conecta con la tabla de recetas
 )
