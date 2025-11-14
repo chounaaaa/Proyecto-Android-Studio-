@@ -5,13 +5,22 @@
 
     <group android:checkableBehavior="single">
 
-        <!-- El ID "nav_profile" que tu Kotlin está buscando -->
+        <!-- 1. Opción de Inicio -->
+        <!-- Usamos un icono de casa que viene con Android. NO necesitas crear ningún archivo. -->
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:title="Inicio" />
+
+        <!-- 2. Opción de Mi Perfil -->
+        <!-- Usamos un icono de usuario que viene con Android. -->
         <item
             android:id="@+id/nav_profile"
             android:icon="@android:drawable/ic_menu_myplaces"
             android:title="Mi Perfil" />
 
-        <!-- El ID "nav_saved_recipes" que tu Kotlin está buscando -->
+        <!-- 3. Opción de Recetas Guardadas -->
+        <!-- Usamos un icono de guardar que viene con Android. -->
         <item
             android:id="@+id/nav_saved_recipes"
             android:icon="@android:drawable/ic_menu_save"
@@ -20,4 +29,3 @@
     </group>
 
 </menu>
-    
