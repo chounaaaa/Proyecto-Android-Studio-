@@ -1,92 +1,66 @@
 package com.example.inicioactivity
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.inputmethod.EditorInfo
-import android.widget.Toast
-import androidx.activity.addCallback
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.inicioactivity.database.AppDatabase
 import com.example.inicioactivity.databinding.ActivityMenuPrincipalBinding
-import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.launch
 
-class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MenuPrincipal : AppCompatActivity() {
 
     private lateinit var binding: ActivityMenuPrincipalBinding
-    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var recetaAdapter: RecetaAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // El código para cambiar el color de la barra de estado se ha movido a los temas XML.
-
         binding = ActivityMenuPrincipalBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // El resto de tu código de configuración...
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+        // 1. Configura el RecyclerView y su adaptador.
+        setupRecyclerView()
 
-        toggle = ActionBarDrawerToggle(
-            this, binding.drawerLayout, binding.toolbar,
-            R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        )
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        binding.navView.setNavigationItemSelectedListener(this)
-
-        binding.searchEditText.setOnEditorActionListener { textView, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val query = textView.text.toString().trim()
-                if (query.isNotEmpty()) {
-                    Toast.makeText(this, "Buscando: $query", Toast.LENGTH_SHORT).show()
-                }
-                return@setOnEditorActionListener true
-            }
-            false
-        }
-
-        binding.filterButton.setOnClickListener {
-            showIngredientsDialog()
-        }
-
-        onBackPressedDispatcher.addCallback(this) {
-            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                binding.drawerLayout.closeDrawer(GravityCompat.START)
-            } else {
-                isEnabled = false
-                onBackPressedDispatcher.onBackPressed()
-            }
-        }
+        // 2. Carga los datos desde la base de datos.
+        cargarRecetas()
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        binding.drawerLayout.closeDrawer(GravityCompat.START)
-        return true
+    private fun setupRecyclerView() {
+        // Inicializamos el adaptador con una lista vacía. El listener del clic se define aquí.
+        recetaAdapter = RecetaAdapter(emptyList()) { recetaConPromedio ->
+            // Esto es lo que sucede cuando se hace clic en una receta.
+            val intent = Intent(this, DetalleRecetaActivity::class.java)
+
+            // Pasamos el ID de la receta a la siguiente actividad.
+            // Lo obtenemos del objeto 'receta' que está dentro de 'recetaConPromedio'.
+            intent.putExtra("ID_RECETA", recetaConPromedio.receta.id_receta)
+
+            startActivity(intent)
+        }
+
+        // Asignamos el layout manager y el adaptador al RecyclerView.
+        binding.recyclerViewRecetas.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewRecetas.adapter = recetaAdapter
     }
 
-    private fun showIngredientsDialog() {
-        val allIngredients = arrayOf("Harina", "Huevo", "Azúcar", "Leche", "Mantequilla", "Pollo", "Tomate", "Cebolla", "Ajo")
-        val selectedItems = BooleanArray(allIngredients.size)
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Selecciona los ingredientes")
-        builder.setMultiChoiceItems(allIngredients, selectedItems) { _, which, isChecked ->
-            selectedItems[which] = isChecked
-        }
-        builder.setPositiveButton("Buscar") { _, _ ->
-            val selectedIngredients = allIngredients.filterIndexed { index, _ -> selectedItems[index] }
-            if (selectedIngredients.isNotEmpty()) {
-                Toast.makeText(this, "Buscando con: ${selectedIngredients.joinToString()}", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(this, "No se seleccionó ningún ingrediente", Toast.LENGTH_SHORT).show()
+    private fun cargarRecetas() {
+        // Usamos una corrutina para acceder a la base de datos en un hilo de fondo.
+        lifecycleScope.launch {
+            // Obtenemos la instancia de la base de datos.
+            val database = (application as MyApplication).database
+
+            // --- LLAMADA A LA NUEVA FUNCIÓN DEL DAO ---
+            // Obtenemos la lista de recetas junto con su calificación promedio.
+            val listaRecetasConPromedio = database.recetaDao().obtenerRecetasConPromedio()
+
+            // Volvemos al hilo principal para actualizar la UI.
+            runOnUiThread {
+                // Actualizamos la lista de datos en el adaptador.
+                recetaAdapter.recetas = listaRecetasConPromedio
+                // Notificamos al adaptador que los datos han cambiado para que redibuje la lista.
+                recetaAdapter.notifyDataSetChanged()
             }
         }
-        builder.setNegativeButton("Cancelar") { dialog, _ ->
-            dialog.dismiss()
-        }
-        builder.create().show()
     }
 }

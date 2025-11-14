@@ -13,14 +13,14 @@ import androidx.room.TypeConverters
 // import kotlinx.coroutines.launch
 
 // La versión ya no importa tanto, pero la dejamos. Puedes ponerla en 1 si quieres.
-@Database(entities = [Usuario::class, Receta::class, Ingrediente::class, Calificacion::class], version = 12) // Sube la versión por última vez
+@Database(entities = [Usuario::class, Receta::class, Ingrediente::class, Calificacion::class], version = 14) // Sube la versión por última vez
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun usuarioDao(): UsuarioDao
     abstract fun recetaDao(): RecetaDao
     abstract fun ingredienteDao(): IngredienteDao
-
+    abstract fun calificacionDao(): CalificacionDao
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null

@@ -48,9 +48,16 @@ class MyApplication : Application() {
                 imagenResId = R.drawable.chorizo_a_la_pomarola
             )
             val idRecetaChorizo = recetaDao.insertarReceta(chorizoALaPomarola).toInt()
+            // Nos aseguramos de que CADA ingrediente de esta lista use 'idRecetaChorizo'
             val ingredientesChorizo = listOf(
-                Ingrediente(nombre = "chorizos", cantidad = "4 unidades", idReceta = idRecetaChorizo),
-                // ... (resto de ingredientes del chorizo)
+                Ingrediente(nombre = "Chorizos de cerdo", cantidad = "4 unidades", idReceta = idRecetaChorizo),
+                Ingrediente(nombre = "Cebolla", cantidad = "1 grande", idReceta = idRecetaChorizo),
+                Ingrediente(nombre = "Morrón rojo", cantidad = "1/2", idReceta = idRecetaChorizo),
+                Ingrediente(nombre = "Salsa de tomate", cantidad = "500g", idReceta = idRecetaChorizo),
+                Ingrediente(nombre = "Caldo de verduras", cantidad = "1 taza", idReceta = idRecetaChorizo),
+                Ingrediente(nombre = "Orégano y ají molido", cantidad = "a gusto", idReceta = idRecetaChorizo),
+                Ingrediente(nombre = "Aceite", cantidad = "cantidad necesaria", idReceta = idRecetaChorizo),
+                Ingrediente(nombre = "Sal y pimienta", cantidad = "a gusto", idReceta = idRecetaChorizo)
             )
             ingredienteDao.insertarIngredientes(ingredientesChorizo)
         }
