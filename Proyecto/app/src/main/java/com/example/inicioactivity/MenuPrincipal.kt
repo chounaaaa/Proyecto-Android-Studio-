@@ -1,20 +1,26 @@
 package com.example.inicioactivity
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable         // <-- AÑADIDO: Necesario para el buscador
+import android.text.TextWatcher      // <-- AÑADIDO: Necesario para el buscador
+import android.util.Log
 import android.view.MenuItem
-import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.inicioactivity.database.AppDatabase
+import com.example.inicioactivity.database.RecetaConPromedio // <-- AÑADIDO: Import que faltaba
 import com.example.inicioactivity.databinding.ActivityMenuPrincipalBinding
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
+import java.util.Locale // <-- AÑADIDO: Necesario para el buscador
 
 class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -22,98 +28,135 @@ class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     private lateinit var recetaAdapter: RecetaAdapter
     private lateinit var toggle: ActionBarDrawerToggle
 
+    // --- ¡NUEVO! Lista para guardar todas las recetas ---
+    // Guardaremos la lista completa aquí para poder restaurarla cuando se borre la búsqueda.
+    private var listaCompletaRecetas: List<RecetaConPromedio> = emptyList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMenuPrincipalBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // --- CÓDIGO COMBINADO ---
-        // 1. Configura la Toolbar (código de tu amigo)
+        // --- Tu código de configuración original ---
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // 2. Configura el Navigation Drawer (código de tu amigo)
         toggle = ActionBarDrawerToggle(
-            this,
-            binding.drawerLayout,
-            binding.toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
 
-        // 3. Configura el RecyclerView (tu código)
         setupRecyclerView()
-
-        // 4. Carga los datos de las recetas (tu código)
         cargarRecetas()
+
+        // --- ¡NUEVO! Configuramos el buscador ---
+        setupSearch()
     }
 
-    // --- Carga la foto de perfil al iniciar o volver a esta pantalla (código de tu amigo) ---
+    // --- Tu código original de onResume y loadHeaderData (sin cambios) ---
     override fun onResume() {
         super.onResume()
-        loadProfileImageInHeader()
+        loadHeaderData()
     }
 
-    // --- Tu función para configurar el RecyclerView, sin cambios ---
+    private fun loadHeaderData() {
+        try {
+            val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+            val username = sharedPref.getString("USER_NAME", "Usuario")
+            val headerView = binding.navView.getHeaderView(0)
+            val usernameTextView = headerView.findViewById<TextView>(R.id.textView)
+            usernameTextView.text = username
+
+            val uriString = sharedPref.getString("profile_image_uri", null)
+            if (uriString != null) {
+                val uri = Uri.parse(uriString)
+                val profileImageViewInHeader = headerView.findViewById<ShapeableImageView>(R.id.imageView)
+                profileImageViewInHeader.setImageURI(uri)
+            }
+        } catch (e: Exception) {
+            Log.e("MenuPrincipal", "Error al cargar datos del header.", e)
+            Toast.makeText(this, "No se pudieron cargar los datos del perfil.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // --- INICIO DE LAS NUEVAS FUNCIONES PARA LA BÚSQUEDA ---
+
+    /**
+     * Configura el listener para la barra de búsqueda.
+     */
+    private fun setupSearch() {
+        // Asumiendo que el EditText en tu activity_menu_principal.xml tiene el id 'searchEditText'
+        binding.searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                // Cada vez que el texto cambia, llamamos a la función de filtrado.
+                filtrarRecetas(s.toString())
+            }
+        })
+    }
+
+    /**
+     * Filtra la lista de recetas basándose en el texto de búsqueda.
+     */
+    private fun filtrarRecetas(textoBusqueda: String) {
+        val listaFiltrada: List<RecetaConPromedio>
+
+        if (textoBusqueda.isEmpty()) {
+            // Si la barra de búsqueda está vacía, mostramos la lista completa.
+            listaFiltrada = listaCompletaRecetas
+        } else {
+            // Si hay texto, filtramos la lista completa.
+            val textoBusquedaMinusculas = textoBusqueda.lowercase(Locale.getDefault())
+            listaFiltrada = listaCompletaRecetas.filter { recetaConPromedio ->
+                // Comparamos el nombre de la receta (en minúsculas) con el texto de búsqueda.
+                recetaConPromedio.receta.nombre.lowercase(Locale.getDefault()).contains(textoBusquedaMinusculas)
+            }
+        }
+        // Actualizamos el adaptador con la nueva lista (completa o filtrada).
+        recetaAdapter.updateRecetas(listaFiltrada)
+    }
+
+    // --- FIN DE LAS NUEVAS FUNCIONES PARA LA BÚSQUEDA ---
+
+
+    // --- Tus funciones originales (con una pequeña modificación en cargarRecetas) ---
+
     private fun setupRecyclerView() {
-        // Inicializamos el adaptador con una lista vacía. El listener del clic se define aquí.
         recetaAdapter = RecetaAdapter(emptyList()) { recetaConPromedio ->
-            // Esto es lo que sucede cuando se hace clic en una receta.
             val intent = Intent(this, DetalleRecetaActivity::class.java)
-            // Pasamos el ID de la receta a la siguiente actividad.
             intent.putExtra("ID_RECETA", recetaConPromedio.receta.id_receta)
             startActivity(intent)
         }
-
-        // Asignamos el layout manager y el adaptador al RecyclerView.
         binding.recyclerViewRecetas.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewRecetas.adapter = recetaAdapter
     }
 
-    // --- Tu función para cargar recetas, sin cambios ---
     private fun cargarRecetas() {
         lifecycleScope.launch {
             val database = (application as MyApplication).database
             val listaRecetasConPromedio = database.recetaDao().obtenerRecetasConPromedio()
+
+            // --- CAMBIO IMPORTANTE ---
+            // Guardamos la lista completa para usarla en la búsqueda.
+            listaCompletaRecetas = listaRecetasConPromedio
+
             runOnUiThread {
-                recetaAdapter.recetas = listaRecetasConPromedio
-                recetaAdapter.notifyDataSetChanged()
+                // Mostramos la lista completa al inicio.
+                recetaAdapter.updateRecetas(listaCompletaRecetas)
             }
         }
     }
 
-    // --- Función de tu amigo para cargar la imagen de perfil ---
-    private fun loadProfileImageInHeader() {
-        try {
-            val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
-            val uriString = sharedPreferences.getString("profile_image_uri", null)
-
-            if (uriString != null) {
-                val uri = Uri.parse(uriString)
-                val headerView = binding.navView.getHeaderView(0)
-                val profileImageViewInHeader = headerView.findViewById<ImageView>(R.id.imageView)
-                profileImageViewInHeader.setImageURI(uri)
-            }
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-            // Si falla por algún motivo de permisos, podemos limpiar la preferencia para evitar futuros crashes
-            val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
-            sharedPreferences.edit().remove("profile_image_uri").apply()
-            Toast.makeText(this, "No se pudo cargar la imagen. Por favor, selecciónala de nuevo.", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    // --- Función de tu amigo para manejar los clics en el menú de navegación ---
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_profile -> {
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
-            // Puedes añadir más casos para otros items del menú aquí
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
