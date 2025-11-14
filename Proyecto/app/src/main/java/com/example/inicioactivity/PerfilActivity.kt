@@ -13,46 +13,56 @@ import androidx.core.view.GravityCompat
 import com.example.inicioactivity.databinding.ActivityPerfilBinding
 import com.google.android.material.navigation.NavigationView
 
-// 1. Añadimos la interfaz para escuchar los clics del menú
 class PerfilActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityPerfilBinding
-    // 2. Variable para el botón de hamburguesa
     private lateinit var toggle: ActionBarDrawerToggle
 
+    // Lanzador que se activa cuando seleccionas una imagen de la galería
     private val selectImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
+            // --- INICIO DE LA MODIFICACIÓN DE PERMISOS ---
+            // 1. Pide permiso PERSISTENTE para que la app pueda acceder a esta imagen incluso después de reiniciarse.
+            //    Esta es la línea clave que soluciona el problema del login.
+            try {
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                contentResolver.takePersistableUriPermission(it, takeFlags)
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+                Toast.makeText(this, "No se pudo obtener permiso para la imagen", Toast.LENGTH_SHORT).show()
+            }
+            // --- FIN DE LA MODIFICACIÓN DE PERMISOS ---
+
+            // 2. Muestra la imagen en la pantalla de perfil
             binding.profileImageView.setImageURI(it)
+
+            // 3. Guarda la URI de la imagen en SharedPreferences
+            val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            sharedPreferences.edit().putString("profile_image_uri", it.toString()).apply()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // OJO: El binding ahora es de ActivityPerfilBinding, que contiene el DrawerLayout
         binding = ActivityPerfilBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // --- INICIO DE LA LÓGICA DEL MENÚ (COPIADA DE MENU-PRINCIPAL) ---
-
-        // 3. Configura la Toolbar
+        // --- Lógica del Menú Lateral ---
         setSupportActionBar(binding.toolbarPerfil)
-        supportActionBar?.setDisplayShowTitleEnabled(false) // Para que no muestre el título por defecto
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // 4. Configura el ActionBarDrawerToggle
         toggle = ActionBarDrawerToggle(
             this,
-            binding.drawerLayoutPerfil, // Usamos el ID del DrawerLayout de perfil
-            binding.toolbarPerfil,      // Y el ID de la Toolbar de perfil
+            binding.drawerLayoutPerfil,
+            binding.toolbarPerfil,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
         binding.drawerLayoutPerfil.addDrawerListener(toggle)
         toggle.syncState()
 
-        // 5. Establece el listener para los clics en el menú
         binding.navViewPerfil.setNavigationItemSelectedListener(this)
 
-        // 6. Gestiona el botón "Atrás" para cerrar el menú si está abierto
         onBackPressedDispatcher.addCallback(this) {
             if (binding.drawerLayoutPerfil.isDrawerOpen(GravityCompat.START)) {
                 binding.drawerLayoutPerfil.closeDrawer(GravityCompat.START)
@@ -61,37 +71,47 @@ class PerfilActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 onBackPressedDispatcher.onBackPressed()
             }
         }
+        // --- Fin Lógica del Menú ---
 
-        // --- FIN DE LA LÓGICA DEL MENÚ ---
-
-        // Tu lógica original para el botón de cambiar foto
+        // Lógica del botón para cambiar la foto
         binding.changeProfileButton.setOnClickListener {
             selectImageLauncher.launch("image/*")
         }
     }
 
-    // 7. Implementamos el método para manejar los clics en los ítems del menú
+    override fun onResume() {
+        super.onResume()
+        // Cada vez que esta pantalla se muestre, intenta cargar la foto guardada
+        loadProfileImage()
+    }
+
+    /**
+     * Lee la ruta de la imagen desde SharedPreferences y la muestra.
+     */
+    private fun loadProfileImage() {
+        val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val uriString = sharedPreferences.getString("profile_image_uri", null)
+
+        if (uriString != null) {
+            val uri = Uri.parse(uriString)
+            binding.profileImageView.setImageURI(uri)
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_home -> {
-                // Si pulsamos "Home", volvemos a MenuPrincipal y cerramos la de perfil
-                val intent = Intent(this, MenuPrincipal::class.java)
-                // Flags para limpiar el stack y no acumular actividades
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish() // Cierra PerfilActivity
+                // Vuelve a MenuPrincipal
+                finish()
             }
             R.id.nav_profile -> {
-                // Ya estamos en perfil, no hacemos nada, solo cerramos el drawer
+                // Ya estamos aquí
                 Toast.makeText(this, "Ya estás en tu perfil", Toast.LENGTH_SHORT).show()
             }
             R.id.nav_saved_recipes -> {
-                // Lógica para otras pantallas...
                 Toast.makeText(this, "Funcionalidad no implementada", Toast.LENGTH_SHORT).show()
             }
         }
-
-        // Cierra el menú lateral después de la acción
         binding.drawerLayoutPerfil.closeDrawer(GravityCompat.START)
         return true
     }

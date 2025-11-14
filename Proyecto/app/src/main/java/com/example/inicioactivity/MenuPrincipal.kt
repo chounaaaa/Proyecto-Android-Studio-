@@ -1,9 +1,11 @@
 package com.example.inicioactivity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -60,26 +62,43 @@ class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         }
     }
 
-    // --- ESTA ES LA FUNCIÓN CORREGIDA ---
+    // --- Carga la foto de perfil al iniciar o volver a esta pantalla ---
+    override fun onResume() {
+        super.onResume()
+        loadProfileImageInHeader()
+    }
+
+    private fun loadProfileImageInHeader() {
+        try {
+            val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            val uriString = sharedPreferences.getString("profile_image_uri", null)
+
+            if (uriString != null) {
+                val uri = Uri.parse(uriString)
+                val headerView = binding.navView.getHeaderView(0)
+                val profileImageViewInHeader = headerView.findViewById<ImageView>(R.id.imageView)
+                profileImageViewInHeader.setImageURI(uri)
+            }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            // Si falla por algún motivo de permisos, podemos limpiar la preferencia para evitar futuros crashes
+            val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            sharedPreferences.edit().remove("profile_image_uri").apply()
+            Toast.makeText(this, "No se pudo cargar la imagen. Por favor, selecciónala de nuevo.", Toast.LENGTH_LONG).show()
+        }
+    }
+    // --- FIN ---
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Comprueba el ID del elemento del menú que se ha pulsado
         when (item.itemId) {
-            // Si es el botón de perfil...
             R.id.nav_profile -> {
-                // Crea un Intent para abrir PerfilActivity
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
-            // Aquí puedes añadir más casos para otros botones en el futuro
-            // Ejemplo:
-            // R.id.nav_saved_recipes -> { Toast.makeText(this, "Clic en recetas", Toast.LENGTH_SHORT).show() }
         }
-
-        // Cierra el menú lateral después de la acción.
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-    // --- FIN DE LA CORRECCIÓN ---
 
     private fun showIngredientsDialog() {
         val allIngredients = arrayOf("Harina", "Huevo", "Azúcar", "Leche", "Mantequilla", "Pollo", "Tomate", "Cebolla", "Ajo")
