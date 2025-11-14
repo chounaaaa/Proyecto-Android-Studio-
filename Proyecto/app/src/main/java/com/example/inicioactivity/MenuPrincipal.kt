@@ -1,5 +1,6 @@
 package com.example.inicioactivity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
@@ -19,13 +20,9 @@ class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // El código para cambiar el color de la barra de estado se ha movido a los temas XML.
-
         binding = ActivityMenuPrincipalBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // El resto de tu código de configuración...
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
@@ -63,10 +60,26 @@ class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         }
     }
 
+    // --- ESTA ES LA FUNCIÓN CORREGIDA ---
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Comprueba el ID del elemento del menú que se ha pulsado
+        when (item.itemId) {
+            // Si es el botón de perfil...
+            R.id.nav_profile -> {
+                // Crea un Intent para abrir PerfilActivity
+                val intent = Intent(this, PerfilActivity::class.java)
+                startActivity(intent)
+            }
+            // Aquí puedes añadir más casos para otros botones en el futuro
+            // Ejemplo:
+            // R.id.nav_saved_recipes -> { Toast.makeText(this, "Clic en recetas", Toast.LENGTH_SHORT).show() }
+        }
+
+        // Cierra el menú lateral después de la acción.
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
+    // --- FIN DE LA CORRECCIÓN ---
 
     private fun showIngredientsDialog() {
         val allIngredients = arrayOf("Harina", "Huevo", "Azúcar", "Leche", "Mantequilla", "Pollo", "Tomate", "Cebolla", "Ajo")

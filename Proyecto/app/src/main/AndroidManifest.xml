@@ -13,6 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InicioActivity">
         <activity
+            android:name=".PerfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".MenuPrincipal"
             android:exported="false" />
         <activity
