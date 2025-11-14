@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- 1. TEMA BASE DE LA APLICACIÓN -->
+    <!-- Aquí se define el comportamiento principal para todas las pantallas -->
     <style name="Base.Theme.InicioActivity" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
+        <!-- Establece el color de la barra de estado a negro en toda la app -->
+        <item name="android:statusBarColor">@android:color/black</item>
+
+        <!-- Asegura que los iconos de la barra (hora, wifi) sean blancos para que se vean sobre el fondo negro -->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
     </style>
 
+    <!-- Este es el tema final que hereda del tema base. No necesita cambios. -->
+    <style name="Theme.InicioActivity" parent="Base.Theme.InicioActivity" />
+
+
+    <!-- 2. ESTILOS ADICIONALES PARA COMPONENTES ESPECÍFICOS -->
+
+    <!-- Estilo para dar forma redondeada a vistas, como el botón de login -->
     <style name="FormaRedondeada" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">25dp</item>
     </style>
 
-    <style name="Theme.InicioActivity" parent="Base.Theme.InicioActivity" />
-
-    <!-- Estilo para MenuPrincipal que FUERZA la barra de estado a ser negra -->
-    <style name="Theme.InicioActivity.MenuPrincipal" parent="Theme.InicioActivity">
-        <item name="android:statusBarColor">@android:color/black</item>
-        <!-- Esto es clave: le dice a los iconos (hora, wifi) que sean blancos -->
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-    </style>
-
-    <!-- Estilo para el RatingBar -->
+    <!-- Estilo personalizado para el RatingBar (las estrellas de calificación) -->
     <style name="RatingBar" parent="Theme.AppCompat">
+        <!-- Color de las estrellas no seleccionadas (gris) -->
         <item name="colorControlNormal">@android:color/darker_gray</item>
-        <item name="colorControlActivated">#EEDA00</item> <!-- O un color amarillo que prefieras -->
+        <!-- Color de las estrellas seleccionadas (amarillo) -->
+        <item name="colorControlActivated">#EEDA00</item>
     </style>
+
 </resources>

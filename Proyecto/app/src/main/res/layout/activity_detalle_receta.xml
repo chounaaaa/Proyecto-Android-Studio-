@@ -5,30 +5,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".DetalleRecetaActivity">
+    tools:context=".DetalleRecetaActivity"
+    android:background="@color/verde_oscuro_input">
+
 
     <!-- 1. Barra superior con imagen colapsable -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/verde_oscuro"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <ImageView
                 android:id="@+id/ivDetalleImagen"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 tools:src="@drawable/chorizo_a_la_pomarola" />
@@ -61,16 +58,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBody1"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textColor="@color/white"
                 tools:text="Un guiso que contiene chorizo y un rico tuco, perfecto para un día frío y para disfrutar en familia." />
 
             <!-- Sección de Ingredientes -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#0E5202"
                 android:layout_marginTop="24dp"
                 app:cardCornerRadius="8dp"
-                app:strokeColor="@color/black"
+                app:strokeColor="#0E5202"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -83,6 +81,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ingredientes"
+                        android:textColor="@color/white"
                         android:textAppearance="?attr/textAppearanceHeadline6" />
 
                     <TextView
@@ -91,6 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:lineSpacingExtra="4dp"
+                        android:textColor="@color/white"
                         android:textAppearance="?attr/textAppearanceBody2"
                         tools:text="• 1.5 kg de Peceto\n• 2 vasos de Vino blanco\n• 1 lata de Atún" />
                 </LinearLayout>
@@ -101,6 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:textColor="@color/white"
                 android:text="Preparación"
                 android:textAppearance="?attr/textAppearanceHeadline6" />
 
@@ -110,6 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:lineSpacingExtra="6dp"
+                android:textColor="@color/white"
                 android:textAppearance="?attr/textAppearanceBody1"
                 tools:text="1. Marinar el peceto en vino blanco toda la noche.\n\n2. Atar el peceto para que conserve su forma. Hervirlo en caldo por 1 hora.\n\n3. Dejar enfriar la carne dentro de su propio caldo." />
 
@@ -119,7 +121,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 app:cardCornerRadius="8dp"
-                app:strokeColor="@color/black"
+                android:background="#1AB400"
+                app:strokeColor="#1AB400"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -156,4 +159,9 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+    <View
+        android:id="@+id/status_bar_view_detalle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@android:color/black" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
