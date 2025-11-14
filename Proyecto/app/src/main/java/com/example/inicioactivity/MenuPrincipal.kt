@@ -157,8 +157,17 @@ class MenuPrincipal : AppCompatActivity(), NavigationView.OnNavigationItemSelect
                 val intent = Intent(this, PerfilActivity::class.java)
                 startActivity(intent)
             }
+            // --- PEGA EL CÓDIGO NUEVO AQUÍ ---
+            R.id.nav_logout -> {
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
+
 }
